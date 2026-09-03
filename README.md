@@ -40,3 +40,31 @@ The loop continues until the goal is achieved or a max iteration limit is reache
 | **Observability** | Across all layers | Log traces, inputs, tool calls, outputs, errors, cost, latency |
 
 Together, these layers form a solid guardrails architecture.
+
+## MCP (Model Context Protocol)
+
+MCP is an open standard that lets AI applications connect to external tools and data sources through a shared protocol — instead of building a custom integration for each service.
+
+### Architecture
+
+MCP has three main roles:
+
+| Role | What it is | Examples |
+| --- | --- | --- |
+| **MCP Host** | The AI application that uses tools and context | Claude Desktop, VS Code, or any MCP-enabled app |
+| **MCP Client** | A connection created by the host to talk to one server | One client per server |
+| **MCP Server** | Exposes a specific capability (tools, resources, prompts) | Filesystem, GitHub API, Slack, database, etc. |
+
+The **host** creates multiple **clients**, and each client connects to a dedicated **server**. That way, one app can use many tools at once while keeping each integration isolated.
+
+### Transport Mechanisms
+
+How the client and server communicate:
+
+**STDIO (local)**  
+`Client → stdin/stdout → Server`  
+Best for local tools running on the same machine as the host.
+
+**Streamable HTTP (cloud / remote)**  
+`Client → POST / SSE → Server`  
+The server runs as an HTTP service and supports standard auth (OAuth, tokens). Better suited for remote or cloud-hosted MCP servers.
